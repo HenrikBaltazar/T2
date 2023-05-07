@@ -12,8 +12,8 @@ float pegaValor(string comando){
     bool validada;
     unsigned int i, ponto;
 
-    posIni = comando.find("("); 
-    posFim = comando.find(")"); 
+    posIni = comando.find("(");
+    posFim = comando.find(")");
     numStr = comando.substr(posIni+1, posFim-posIni-1);
     validada = true;
     ponto = 0;
@@ -37,11 +37,11 @@ float pegaValor(string comando){
 }
 
 int main(){
-
+    const float zero = 0.0;
     string comando = "";
     float valor;
     bool erroDeSintaxe = false, inicio = false;
-    
+
     Pilha<float> expressao;
 
     cout << "Editor de expressao aritmetica" << endl;
@@ -54,6 +54,8 @@ int main(){
             char c = cin.get();
             if(c == 'S' || c == 's')
                 comando = "FIM";
+            else
+                comando = "";
         }else if(comando == "HELP" || comando == "help"){
             cout << "INICIO:.............inicializa o programa" << endl;
             cout << "ZERA:...............reinicializa a expressao aritmetica" << endl;
@@ -68,6 +70,7 @@ int main(){
             if(!inicio){
                 cria(expressao);
                 inicio = true;
+                insere(expressao,0.0f);
                 cout << "Programa iniciado";
             }
             else
@@ -78,6 +81,7 @@ int main(){
             char c = cin.get();
             if(c == 'S' || c == 's')
                 destroi(expressao);
+                insere(expressao,zero);
             } else
                 cout << "Programa ainda nao foi iniciado"<<endl;
         }else if (comando.find("SOMA") != string::npos || comando.find("soma") != string::npos){
@@ -131,7 +135,7 @@ int main(){
                 }else
                     erroDeSintaxe = true;
             }else
-                cout << "Programa ainda nao foi iniciado"<<endl; 
+                cout << "Programa ainda nao foi iniciado"<<endl;
         }else if (comando == "PARCELAS" || comando == "parcelas"){
             if(inicio){
                 mostra(expressao);
@@ -139,11 +143,11 @@ int main(){
                 cout << "Programa ainda nao foi iniciado"<<endl;
         }else if (comando == "IGUAL" || comando == "igual"){
             if(inicio)
-                cout << "= " << topo(expressao)<<endl;
+                cout << "= " << topo(expressao) <<endl;
             else
                 cout << "Programa ainda nao foi iniciado"<<endl;
         }else{
-            cout << "COMANDO INVÁLIDO" <<endl;
+            cout << "COMANDO" << comando << "INVÁLIDO" <<endl;
         }
 
         if(erroDeSintaxe){
@@ -151,7 +155,7 @@ int main(){
             erroDeSintaxe = false;
         }
 
-        
+
     }while(comando != "FIM");
 
     return 0;
