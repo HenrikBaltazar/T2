@@ -2,16 +2,47 @@
 #include <string>
 #include <cstdlib> // atoi, atof
 #include <cctype>  // isdigit
+#include "Pilha.h"
 
 using namespace std;
 
+float pegaValor(string comando){
+    int posIni = 0, posFim = 0;
+    string numStr = "";
+    bool validada;
+    unsigned int i, ponto;
+
+    posIni = comando.find("("); 
+    posFim = comando.find(")"); 
+    numStr = comando.substr(posIni+1, posFim-posIni-1);
+    validada = true;
+    ponto = 0;
+    if (numStr == "") // se for string vazia
+        validada = false;
+    else if (!isdigit(numStr.at(0)) && numStr.at(0) == '-') // se não for digito/sinal
+        validada = false;
+    else
+        for (i = 1; i < numStr.length(); i++) // “varre” posicao a posicao
+            if (!isdigit(numStr.at(i)))
+            { // se não for digito
+                if (isdigit(numStr.at(i - 1)) && numStr.at(i) == '.' && ponto == 0)
+                    // verifica se eh ponto com um digito antes
+                    ponto++; // permite um ponto apenas
+                else
+                    validada = false;
+            }
+    if (!validada)
+        return -1;
+    return stoi(numStr);
+}
+
 int main(){
 
-    string comando = " ";
+    string comando = "";
     float valor;
-    bool erroDeSintaxe = false;
-    //Pilha expressao;
-    //expressao.cria;
+    bool erroDeSintaxe = false, inicio = false;
+    
+    Pilha<float> expressao;
 
     cout << "Editor de expressao aritmetica" << endl;
     cout << "digite 'HELP' para visualizar a lista de comandos disponiveis"<<endl;
@@ -34,38 +65,91 @@ int main(){
             cout << "IGUAL:..............exibe o resultado da avaliacao da expressao aritmetica "<<endl;
             cout << "FIM:................finaliza o programa"<<endl;
         }else if (comando == "INICIO" || comando == "inicio"){
-            //consultar se a pilha expressao esta vazia
-            //se sim inicia com zero
-            //se nao da erro de pilha ja existe
+            if(!inicio){
+                cria(expressao);
+                inicio = true;
+                cout << "Programa iniciado";
+            }
+            else
+                cout << "Programa ja foi iniciada";
         }else if (comando == "ZERA" || comando == "zera"){
-            //pergunta se tem certeza
-            //se sim remove todos os elementos da pilha e reinicia com zero
+            if(inicio){
+            cout << "Tem certeza que deseja zerar a expressao? [S/N]" << endl;
+            char c = cin.get();
+            if(c == 'S' || c == 's')
+                destroi(expressao);
+            } else
+                cout << "Programa ainda nao foi iniciado"<<endl;
         }else if (comando.find("SOMA") != string::npos || comando.find("soma") != string::npos){
-            cout << "(SOMA) # ";
-            cin >> valor;
-            //pega o topo da pilha, soma com valor e insere o resultado na pilha novamente
-        }else if (comando == "SUBTRAI" || comando == "subtrai"){
-            cout << "(SUBTRAI) # ";
-            cin >> valor;
-            //pega o topo da pilha, subtrai com valor e insere o resultado na pilha novamente
-        }else if (comando == "MULTIPLICA" || comando == "multiplica"){
-            cout << "(MULTIPLICA) # ";
-            cin >> valor;
-            //pega o topo da pilha, multiplica com valor e insere o resultado na pilha novamente
-        }else if (comando == "DIVIDE" || comando == "divide"){
-            cout << "(DIVIDE) # ";
-            cin >> valor;
-            //pega o topo da pilha, divide com valor e insere o resultado na pilha novamente
+            if(inicio){
+                if (comando.find("(") != string::npos && comando.find(")")!= string::npos ){
+                    valor = pegaValor(comando);
+                    if(valor == -1)
+                        erroDeSintaxe = true;
+                    else{
+                        insere(expressao, valor+topo(expressao));
+                    }
+                }else
+                    erroDeSintaxe = true;
+            }else
+                cout << "Programa ainda nao foi iniciado"<<endl;
+        }else if (comando.find("SUBTRAI") != string::npos || comando.find("subtrai") != string::npos){
+            if(inicio){
+                if (comando.find("(") != string::npos && comando.find(")")!= string::npos ){
+                    valor = pegaValor(comando);
+                    if(valor == -1)
+                        erroDeSintaxe = true;
+                    else{
+                        insere(expressao, topo(expressao)-valor);
+                    }
+                }else
+                    erroDeSintaxe = true;
+            }else
+                cout << "Programa ainda nao foi iniciado"<<endl;
+        }else if (comando.find("MULTIPLICA") != string::npos || comando.find("multiplica") != string::npos){
+            if(inicio){
+            if (comando.find("(") != string::npos && comando.find(")")!= string::npos ){
+                valor = pegaValor(comando);
+                if(valor == -1)
+                    erroDeSintaxe = true;
+                else{
+                    insere(expressao, valor*topo(expressao));
+                }
+            }else
+                erroDeSintaxe = true;
+            }else
+                cout << "Programa ainda nao foi iniciado"<<endl;
+        }else if (comando.find("DIVIDE") != string::npos || comando.find("divide") != string::npos){
+            if(inicio){
+                if (comando.find("(") != string::npos && comando.find(")")!= string::npos ){
+                    valor = pegaValor(comando);
+                    if(valor == -1)
+                        erroDeSintaxe = true;
+                    else{
+                        insere(expressao, topo(expressao)/valor);
+                    }
+                }else
+                    erroDeSintaxe = true;
+            }else
+                cout << "Programa ainda nao foi iniciado"<<endl; 
         }else if (comando == "PARCELAS" || comando == "parcelas"){
-            //exibe toda a pilha
+            if(inicio){
+                mostra(expressao);
+            }else
+                cout << "Programa ainda nao foi iniciado"<<endl;
         }else if (comando == "IGUAL" || comando == "igual"){
-            //exibe apenas o topo da pilha
+            if(inicio)
+                cout << "= " << topo(expressao)<<endl;
+            else
+                cout << "Programa ainda nao foi iniciado"<<endl;
         }else{
             cout << "COMANDO INVÁLIDO" <<endl;
         }
 
-        if(erroDeSintaxe)
-            cout << "ERRO DE SINTAXE, SIGA O FOMATO 'COMANDO(valor)', digite 'help' para mais informacoes"<<endl;
+        if(erroDeSintaxe){
+            cout << "ERRO DE SINTAXE, SIGA O FOMATO 'COMANDO(valor)' com valor float sem sinal." << endl << "Digite 'help' para mais informacoes"<<endl;
+            erroDeSintaxe = false;
+        }
 
         
     }while(comando != "FIM");
