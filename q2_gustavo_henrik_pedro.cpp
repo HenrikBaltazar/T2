@@ -17,15 +17,14 @@ float pegaValor(string comando){
     numStr = comando.substr(posIni+1, posFim-posIni-1);
     validada = true;
     ponto = 0;
+    int lenght=numStr.length();
     if (numStr == "") // se for string vazia
         validada = false;
-    else if (!isdigit(numStr.at(0)) && numStr.at(0) == '-') // se não for digito/sinal
-        validada = false;
     else
-        for (i = 1; i < numStr.length(); i++) // “varre” posicao a posicao
+        for (i = 0; i < numStr.length(); i++) // “varre” posicao a posicao
             if (!isdigit(numStr.at(i)))
             { // se não for digito
-                if (isdigit(numStr.at(i - 1)) && numStr.at(i) == '.' && ponto == 0)
+                if (isdigit(numStr.at(i)) && numStr.at(i+1) == '.' && ponto == 0)
                     // verifica se eh ponto com um digito antes
                     ponto++; // permite um ponto apenas
                 else
@@ -33,7 +32,8 @@ float pegaValor(string comando){
             }
     if (!validada)
         return -1;
-    return stoi(numStr);
+    else
+        return stoi(numStr);
 }
 
 int main(){
