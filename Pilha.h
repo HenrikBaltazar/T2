@@ -85,7 +85,7 @@ T topo(Pilha<T> pilha)
 template<typename T>
 void insere(Pilha<T>& pilha, T elemento)
 {
-    Nodo<T>* aux;
+    Nodo<T>* aux = new Nodo<T>;
     aux->elemento = elemento;
     aux->prox = pilha.fim;
     pilha.fim = aux;
@@ -105,10 +105,6 @@ void retira(Pilha<T>& pilha)
 template<typename T>
 void mostra(Pilha<T> pilha)
 {
-    Nodo<T>* aux = pilha.fim;
-    while (aux != NULL)
-    {
-        cout << aux->elemento << endl;
-        aux = aux->prox;
-    }
+    for (int n = pilha.cardinalidade; n >= 1; n--)
+        cout << umElemento(pilha, n) << endl;
 }

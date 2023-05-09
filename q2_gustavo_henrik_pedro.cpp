@@ -37,7 +37,6 @@ float pegaValor(string comando){
 }
 
 int main(){
-    const float zero = 0.0;
     string comando = "";
     float valor;
     bool erroDeSintaxe = false, inicio = false;
@@ -47,6 +46,7 @@ int main(){
     cout << "Editor de expressao aritmetica" << endl;
     cout << "digite 'HELP' para visualizar a lista de comandos disponiveis"<<endl;
     do{
+        comando = "";
         cout <<endl<< "# ";
         getline(cin,comando);
         if(comando == "FIM" || comando == "fim"){
@@ -70,7 +70,6 @@ int main(){
             if(!inicio){
                 cria(expressao);
                 inicio = true;
-                insere(expressao,0.0f);
                 cout << "Programa iniciado";
             }
             else
@@ -81,7 +80,8 @@ int main(){
             char c = cin.get();
             if(c == 'S' || c == 's')
                 destroi(expressao);
-                insere(expressao,zero);
+                insere(expressao,0.0f);
+                cin.ignore();
             } else
                 cout << "Programa ainda nao foi iniciado"<<endl;
         }else if (comando.find("SOMA") != string::npos || comando.find("soma") != string::npos){
@@ -91,7 +91,7 @@ int main(){
                     if(valor == -1)
                         erroDeSintaxe = true;
                     else{
-                        insere(expressao, valor+topo(expressao));
+                        ehVazia(expressao) ? insere(expressao, valor) : insere(expressao, valor+topo(expressao));
                     }
                 }else
                     erroDeSintaxe = true;
@@ -104,7 +104,7 @@ int main(){
                     if(valor == -1)
                         erroDeSintaxe = true;
                     else{
-                        insere(expressao, topo(expressao)-valor);
+                        ehVazia(expressao) ? insere(expressao, valor*-1) : insere(expressao, topo(expressao)-valor);
                     }
                 }else
                     erroDeSintaxe = true;
@@ -117,7 +117,7 @@ int main(){
                 if(valor == -1)
                     erroDeSintaxe = true;
                 else{
-                    insere(expressao, valor*topo(expressao));
+                    ehVazia(expressao) ? insere(expressao, 0.0f) : insere(expressao, valor*topo(expressao));
                 }
             }else
                 erroDeSintaxe = true;
@@ -127,10 +127,10 @@ int main(){
             if(inicio){
                 if (comando.find("(") != string::npos && comando.find(")")!= string::npos ){
                     valor = pegaValor(comando);
-                    if(valor == -1)
+                    if(valor == -1 || valor == 0)
                         erroDeSintaxe = true;
                     else{
-                        insere(expressao, topo(expressao)/valor);
+                        ehVazia(expressao) ? insere(expressao, 0.0f) : insere(expressao, topo(expressao)/valor);
                     }
                 }else
                     erroDeSintaxe = true;
@@ -138,16 +138,22 @@ int main(){
                 cout << "Programa ainda nao foi iniciado"<<endl;
         }else if (comando == "PARCELAS" || comando == "parcelas"){
             if(inicio){
-                mostra(expressao);
+                if(ehVazia(expressao))
+                    cout << "Expressao vazia"<<endl;
+                else
+                    mostra(expressao);
             }else
                 cout << "Programa ainda nao foi iniciado"<<endl;
         }else if (comando == "IGUAL" || comando == "igual"){
             if(inicio)
-                cout << "= " << topo(expressao) <<endl;
+                if(ehVazia(expressao))
+                    cout << "Expressao vazia"<<endl;
+                else
+                    cout << "= " << topo(expressao) <<endl;
             else
                 cout << "Programa ainda nao foi iniciado"<<endl;
         }else{
-            cout << "COMANDO" << comando << "INVÁLIDO" <<endl;
+            cout << "COMANDO INVÁLIDO" <<endl;
         }
 
         if(erroDeSintaxe){
